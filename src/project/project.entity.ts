@@ -16,7 +16,11 @@ export class Project {
   @IsNotEmpty()
   name: string;
 
-  @ManyToOne(type => User, user => user.id)
+  @Column()
+  @IsNotEmpty()
+  u_id: number
+
+  @ManyToOne(type => User, user => user.id,{onUpdate: 'CASCADE', onDelete: 'CASCADE'})
   user: User[];
 
 }

@@ -1,8 +1,10 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Order } from 'src/order/order.entity';
 import { OrderService } from 'src/order/order.service';
+import { Project } from 'src/project/project.entity';
 import { ProjectService } from 'src/project/project.service';
-import { Repository, DeleteResult } from 'typeorm';
+import { Repository, DeleteResult, getRepository, getConnection } from 'typeorm';
 import { User } from './user.entity';
 
 export type UserLogin = any;
@@ -108,34 +110,85 @@ export class UserService {
   }
 
 
+  // findOneByOne() {
+
+  //   const userResult = this.findAll()
+
+  //   userResult.then( function(result) {
+  //     console.log("All users are ", result);
+  //   })
+
+  //   userResult.then(res => {
+  //     res.forEach(element => {
+
+  //       console.log("each user", element)
+
+  //       const projectResult = this.projectservice.findAllProjects()
+
+  //       console.log("project result ", projectResult);
+  //       projectResult.then(function (result)  {
+  //           console.log("project s",result)
+  //         })
+
+  //       const orderResult = this.orderservice.findAllOrders();
+  //       console.log("order result ", orderResult);
+  //       orderResult.then(function(result) {
+  //           console.log("order ",result)
+  //         })
+
+  //       })
+  //     })
+
+
+  //   return userResult
+  // }
+
+
+
   findOneByOne() {
 
     const userResult = this.findAll()
 
-    userResult.then( function(result) {
+    userResult.then(function (result) {
       console.log("All users are ", result);
     })
-  
+
     userResult.then(res => {
       res.forEach(element => {
 
         console.log("each user", element)
+        console.log("each id", element.id)
+        let id = element.id;
 
-        const projectResult = this.projectservice.findAllProjects()
-      
-        projectResult.then(function (result)  {
-            console.log("project s",result)
-          })
-      
-        const orderResult = this.orderservice.findAllOrders()
-        orderResult.then(function(result) {
-            console.log("order ",result)
-          })
+        let projectResult = getConnection()
+          .createQueryBuilder()
+          .select('project')
+          .from(Project, 'project')
+          .where('project.u_id = id')
+          .execute()
 
+        projectResult.then(function (result) {
+          console.log("project s", result)
+        })
+
+        console.log("project result ", projectResult);
+
+        let orderResult = getConnection()
+          .createQueryBuilder()
+          .select('order')
+          .from(Order, 'order')
+          .where('order.u_id = id')
+          .execute()
+
+        console.log("order result ", orderResult);
+
+        orderResult.then(function (result) {
+          console.log("orders ", result)
         })
       })
-      
-        
-    return userResult
+    })
+
+    return userResult;
   }
+
 }

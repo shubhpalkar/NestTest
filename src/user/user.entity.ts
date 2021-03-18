@@ -8,7 +8,7 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Project } from 'src/project/project.entity';
 import { Order } from 'src/order/order.entity';
 
-@Entity('User')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -37,7 +37,7 @@ export class User {
   @OneToMany(type => Project, project =>  project.id)
   projects: Project;
 
-  @OneToMany(type => Order, order =>  order.id)
+  @OneToMany(type => Order, order =>  order.id, {cascade: true})
   order: Order;
 
 }

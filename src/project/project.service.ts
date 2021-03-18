@@ -14,6 +14,12 @@ export class ProjectService {
       public async findById(id: number): Promise<Project | null> {
         return await this.ProjectRepo.findOneOrFail(id);
       }
+
+      // public async findByUId(u_id: number): Promise<Project | null> {
+      //   return this.ProjectRepo.find(u_id)
+        
+        
+      // }
     
       public async create(project: Project): Promise<Project> {
         return this.ProjectRepo.save(project);

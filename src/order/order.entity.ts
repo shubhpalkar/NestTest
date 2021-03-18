@@ -16,7 +16,11 @@ export class Order {
   @IsNotEmpty()
   name: string;
 
-  @ManyToOne(type => User, user => user.id)
+  @Column()
+  @IsNotEmpty()
+  u_id: number
+
+  @ManyToOne(type => User, user => user.id, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
   user: User[];
 
 

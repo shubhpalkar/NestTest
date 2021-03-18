@@ -1,10 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { count } from 'console';
 import { Order } from 'src/order/order.entity';
 import { OrderService } from 'src/order/order.service';
 import { Project } from 'src/project/project.entity';
 import { ProjectService } from 'src/project/project.service';
-import { Repository, DeleteResult, getRepository, getConnection } from 'typeorm';
+import { Repository, DeleteResult, getRepository, getConnection, getMetadataArgsStorage } from 'typeorm';
 import { User } from './user.entity';
 
 export type UserLogin = any;
@@ -143,6 +144,39 @@ export class UserService {
   //   return userResult
   // }
 
+  async getData(id: number){
+    let projectResult = getConnection()
+      .createQueryBuilder()
+      // .select('project')
+      .select('COUNT(*)', 'count')
+      .from(Project, 'project')
+      .where('project.u_id = id')
+      .execute()
+
+      projectResult.then(function (result) {
+        console.log("project s", result)
+      })
+      return projectResult;
+    }
+
+    async getOrder(id: number){
+
+      console.log("this is order id", id)
+      let orderResult = getConnection()
+          .createQueryBuilder()
+          // .select('order')
+          .select('COUNT(*)', 'count')
+          .from(Order, 'order')
+          .where('order.u_id = id')
+          .execute()
+
+          orderResult.then(function (result) {
+            console.log("orders ", result)
+          })
+          // console.log("orders ", orderResult)
+          return orderResult;
+
+    }
 
 
   findOneByOne() {
@@ -160,31 +194,17 @@ export class UserService {
         console.log("each id", element.id)
         let id = element.id;
 
-        let projectResult = getConnection()
-          .createQueryBuilder()
-          .select('project')
-          .from(Project, 'project')
-          .where('project.u_id = id')
-          .execute()
+        console.log("this is log", id)
 
-        projectResult.then(function (result) {
-          console.log("project s", result)
-        })
+       let projectResult = this.getData(id)
 
         console.log("project result ", projectResult);
 
-        let orderResult = getConnection()
-          .createQueryBuilder()
-          .select('order')
-          .from(Order, 'order')
-          .where('order.u_id = id')
-          .execute()
+        let result = this.getOrder(id)
 
-        console.log("order result ", orderResult);
+        console.log("order result ", result);
 
-        orderResult.then(function (result) {
-          console.log("orders ", result)
-        })
+        
       })
     })
 

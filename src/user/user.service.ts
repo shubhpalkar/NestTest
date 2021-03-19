@@ -13,8 +13,12 @@ export type UserLogin = any;
 export type Orderlogin = any;
 export type Projectlogin = any;
 
+var data: number;
+
 @Injectable()
 export class UserService {
+
+
 
   public readonly userslog = [
     {
@@ -114,43 +118,37 @@ export class UserService {
   }
 
 
- async getData(id: number): Promise<any>{
-    const projectResult = getConnection()
+  async getData(id: number): Promise<any> {
+
+    const projectResult = await getConnection()
       .createQueryBuilder()
       .select('project.u_id')
       .from(Project, 'project')
-      .where("project.u_id = :u_id ",{u_id: id})
+      .where("project.u_id = :u_id ", { u_id: id })
       // .getManyAndCount()
       .getCount()
 
-      projectResult.then(function (result) {
-          console.log("Projects count ", result)
-        })
-
-      return projectResult;
- }
+    return projectResult.valueOf();
+  }
 
 
- async getOrder(id: number): Promise<any>{
-  const orderResult = getConnection()
-    .createQueryBuilder()
-    .select('order.u_id')
-    .from(Order, 'order')
-    .where("order.u_id = :u_id ",{u_id: id})
-    // .getManyAndCount()
-    .getCount()
+  async getOrder(id: number): Promise<any> {
+    var totalProject = 0;
 
-    orderResult.then(function (result) {
-        console.log("Order count ", result)
-      })
+    const orderResult = await getConnection()
+      .createQueryBuilder()
+      .addSelect('order.u_id')
+      .from(Order, 'order')
+      .where("order.u_id = :u_id ", { u_id: id })
+      // .getManyAndCount()
+      .getCount()
 
-    return orderResult;
-}
+    return orderResult.valueOf();
+  }
 
-
-    
-
-  findOneByOne() {
+  async findOneByOne() {
+    var totalProject = 0;
+    var totalOrder = 0;
 
     const userResult = this.findAll()
 
@@ -158,18 +156,28 @@ export class UserService {
       console.log("All users are ", result);
     })
 
-    userResult.then(res => {
-      res.forEach(element => {
+    await userResult.then(res => {
+      res.forEach(async element => {
 
-        console.log("each user", element)
-        console.log("each id", element.id)
+        // console.log("each user", element)
         let id = element.id;
-
-       this.getData(id)
-
-       this.getOrder(id)
+        data = await this.getData(id)
+        totalProject = totalProject + data;
+        console.log("total Project Count ", totalProject)
       })
     })
+
+    userResult.then(res => {
+      res.forEach(async element => {
+
+        // console.log("each user", element)
+        let id = element.id;
+        var data = await this.getOrder(id)
+        totalOrder = (totalOrder + data);
+        console.log("total order count", totalOrder)
+      })
+    })
+
 
     return userResult;
   }

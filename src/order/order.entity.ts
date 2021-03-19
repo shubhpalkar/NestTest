@@ -20,8 +20,8 @@ export class Order {
   @IsNotEmpty()
   u_id: number
 
-  @ManyToOne(type => User, user => user.id, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
-  user: User[];
+  // @ManyToOne(type => User, user => user.id, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+  // user: User[];
 
 
 }

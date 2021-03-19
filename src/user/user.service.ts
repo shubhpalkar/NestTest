@@ -1,6 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { count } from 'console';
+import { Observable } from 'rxjs';
 import { Order } from 'src/order/order.entity';
 import { OrderService } from 'src/order/order.service';
 import { Project } from 'src/project/project.entity';
@@ -53,7 +54,9 @@ export class UserService {
 
   constructor(@InjectRepository(User) private readonly userRepository: Repository<User>,
     private projectservice: ProjectService,
-    private orderservice: OrderService
+    private orderservice: OrderService,
+    @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
+    @InjectRepository(Project) private readonly projectRepository: Repository<Project>
   ) { }
 
   public findAll() {
@@ -111,73 +114,41 @@ export class UserService {
   }
 
 
-  // findOneByOne() {
-
-  //   const userResult = this.findAll()
-
-  //   userResult.then( function(result) {
-  //     console.log("All users are ", result);
-  //   })
-
-  //   userResult.then(res => {
-  //     res.forEach(element => {
-
-  //       console.log("each user", element)
-
-  //       const projectResult = this.projectservice.findAllProjects()
-
-  //       console.log("project result ", projectResult);
-  //       projectResult.then(function (result)  {
-  //           console.log("project s",result)
-  //         })
-
-  //       const orderResult = this.orderservice.findAllOrders();
-  //       console.log("order result ", orderResult);
-  //       orderResult.then(function(result) {
-  //           console.log("order ",result)
-  //         })
-
-  //       })
-  //     })
-
-
-  //   return userResult
-  // }
-
-  async getData(id: number){
-    let projectResult = getConnection()
+ async getData(id: number): Promise<any>{
+    const projectResult = getConnection()
       .createQueryBuilder()
-      // .select('project')
-      .select('COUNT(*)', 'count')
+      .select('project.u_id')
       .from(Project, 'project')
-      .where('project.u_id = id')
-      .execute()
+      .where("project.u_id = :u_id ",{u_id: id})
+      // .getManyAndCount()
+      .getCount()
 
       projectResult.then(function (result) {
-        console.log("project s", result)
-      })
+          console.log("Projects count ", result)
+        })
+
       return projectResult;
-    }
+ }
 
-    async getOrder(id: number){
 
-      console.log("this is order id", id)
-      let orderResult = getConnection()
-          .createQueryBuilder()
-          // .select('order')
-          .select('COUNT(*)', 'count')
-          .from(Order, 'order')
-          .where('order.u_id = id')
-          .execute()
+ async getOrder(id: number): Promise<any>{
+  const orderResult = getConnection()
+    .createQueryBuilder()
+    .select('order.u_id')
+    .from(Order, 'order')
+    .where("order.u_id = :u_id ",{u_id: id})
+    // .getManyAndCount()
+    .getCount()
 
-          orderResult.then(function (result) {
-            console.log("orders ", result)
-          })
-          // console.log("orders ", orderResult)
-          return orderResult;
+    orderResult.then(function (result) {
+        console.log("Order count ", result)
+      })
 
-    }
+    return orderResult;
+}
 
+
+    
 
   findOneByOne() {
 
@@ -194,17 +165,9 @@ export class UserService {
         console.log("each id", element.id)
         let id = element.id;
 
-        console.log("this is log", id)
+       this.getData(id)
 
-       let projectResult = this.getData(id)
-
-        console.log("project result ", projectResult);
-
-        let result = this.getOrder(id)
-
-        console.log("order result ", result);
-
-        
+       this.getOrder(id)
       })
     })
 

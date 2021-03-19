@@ -7,7 +7,7 @@ import {
 import { IsNotEmpty } from 'class-validator';
 import { User } from 'src/user/user.entity';
 
-@Entity('Project')
+@Entity('project')
 export class Project {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,8 +20,8 @@ export class Project {
   @IsNotEmpty()
   u_id: number
 
-  @ManyToOne(type => User, user => user.id,{onUpdate: 'CASCADE', onDelete: 'CASCADE'})
-  user: User[];
+  // @ManyToOne(type => User, user => user.id,{onUpdate: 'CASCADE', onDelete: 'CASCADE'})
+  // user: User[];
 
 }
 

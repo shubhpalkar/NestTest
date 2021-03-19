@@ -22,9 +22,9 @@ export class User {
   @IsNotEmpty()
   email: string;
 
-  @Column()
-  @IsNotEmpty()
-  password: string;
+  // @Column()
+  // @IsNotEmpty()
+  // password: string;
 
   @Column()
   @IsNotEmpty()
